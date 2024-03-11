@@ -195,10 +195,14 @@ func CheckMasters(filename string) error {
 		return err
 	}
 
-	result := processZones(zones, 200)
+	if len(zones) > 0 {
+		result := processZones(zones, 200)
 
-	if len(result) > 1 {
-		fmt.Println("error")
+		if len(result) > 1 {
+			fmt.Println("error")
+		}
+	} else {
+		fmt.Println("no zones found")
 	}
 
 	return nil

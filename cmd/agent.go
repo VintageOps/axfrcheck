@@ -20,7 +20,7 @@ func Execute() {
 				fmt.Printf("ERROR: Needs one argument, the nameds/pdns configuration file, %d provided", c.NArg())
 				cli.ShowAppHelpAndExit(c, 1)
 			}
-			return pkg.CheckMasters()
+			return pkg.CheckMasters(c.Args().Get(0))
 		},
 	}
 	err := app.Run(os.Args)
