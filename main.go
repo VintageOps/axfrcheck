@@ -1,10 +1,10 @@
 package main
 
-import(
-  "axfrcheck/cmd"
+import (
+	"axfrcheck/cmd"
 )
 
-func main(){
-  cmd.Execute()
-  return
+func main() {
+	cmd.Execute()
+	return
 }

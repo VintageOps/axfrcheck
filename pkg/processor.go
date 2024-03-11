@@ -3,12 +3,13 @@ package pkg
 import (
 	"bufio"
 	"fmt"
-	"github.com/miekg/dns"
 	"os"
 	"regexp"
 	"strings"
 	"sync"
 	"time"
+
+	"github.com/miekg/dns"
 )
 
 type SlaveZone struct {
@@ -148,7 +149,7 @@ func zoneWorker(taskChan <-chan SlaveZone, resultChan chan<- []AxfrResult, wg *s
 
 }
 
-func processZones(zones []SlaveZone,workers int) []AxfrResult {
+func processZones(zones []SlaveZone, workers int) []AxfrResult {
 	var wg sync.WaitGroup
 
 	zoneChan := make(chan SlaveZone, len(zones))
@@ -180,14 +181,13 @@ func processZones(zones []SlaveZone,workers int) []AxfrResult {
 			exitCode = 1
 		}
 	}
-  fmt.Println(exitCode)
+	fmt.Println(exitCode)
 
-  return []AxfrResult{}
+	return []AxfrResult{}
 
 }
 
 func CheckMasters(filename string) error {
-
 
 	zones, err := parseNamedConf(filename)
 	if err != nil {
@@ -195,12 +195,12 @@ func CheckMasters(filename string) error {
 		return err
 	}
 
-  result := processZones(zones, 200)
+	result := processZones(zones, 200)
 
-  if len(result) > 1 {
-    fmt.Println("error")
-  }
+	if len(result) > 1 {
+		fmt.Println("error")
+	}
 
-  return nil
+	return nil
 
 }
