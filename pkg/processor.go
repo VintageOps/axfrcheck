@@ -150,6 +150,7 @@ func zoneWorker(taskChan <-chan SlaveZone, resultChan chan<- []AxfrResult, wg *s
 }
 
 func processZones(zones []SlaveZone, workers int) []AxfrResult {
+	var axfresult []AxfrResult
 	var wg sync.WaitGroup
 
 	zoneChan := make(chan SlaveZone, len(zones))
@@ -170,20 +171,14 @@ func processZones(zones []SlaveZone, workers int) []AxfrResult {
 		close(resultChan)
 	}()
 
-	exitCode := 0
-
 	for result := range resultChan {
 		if len(result) > 0 {
 			// fmt.Printf("Zone")
-			for _, i := range result {
-				fmt.Printf("Zone: %s %s\n", i.Name, i.Error.Error())
-			}
-			exitCode = 1
+			axfresult = append(axfresult, result...)
 		}
 	}
-	fmt.Println(exitCode)
 
-	return []AxfrResult{}
+	return axfresult
 
 }
 
@@ -198,13 +193,13 @@ func CheckMasters(filename string) error {
 	if len(zones) > 0 {
 		result := processZones(zones, 200)
 
-		if len(result) > 1 {
-			fmt.Println("error")
+		if len(result) > 0 {
+			err = fmt.Errorf("error in transfer %v", result)
 		}
 	} else {
-		fmt.Println("no zones found")
+		err = fmt.Errorf("no zones found")
 	}
 
-	return nil
+	return err
 
 }
