@@ -81,7 +81,7 @@ func parseNamedConf(filePath string) ([]SlaveZone, error) {
 	return zones, nil
 }
 
-func axfrzone(zone SlaveZone, master string) AxfrResult {
+func axfrZone(zone SlaveZone, master string) AxfrResult {
 	var returnValue AxfrResult
 	var rrSlice []dns.RR
 	transfer := new(dns.Transfer)
@@ -135,7 +135,7 @@ func zoneWorker(taskChan <-chan SlaveZone, resultChan chan<- []AxfrResult, wg *s
 		// this should be a conf variable
 		goodAnswers := 0
 		for _, master := range zone.Masters {
-			result := axfrzone(zone, master)
+			result := axfrZone(zone, master)
 			if result.Error != nil {
 				returnValue = append(returnValue, result)
 			} else {
@@ -194,7 +194,12 @@ func CheckMasters(filename string) error {
 		result := processZones(zones, 200)
 
 		if len(result) > 0 {
-			err = fmt.Errorf("error in transfer %v", result)
+			strErr := fmt.Sprintf("ERROR in transfer:")
+			for _, rslt := range result {
+				strErr = fmt.Sprintf("%s\nZone %s %s", strErr, rslt.Name, rslt.Error)
+
+			}
+			err = fmt.Errorf(strErr)
 		}
 	} else {
 		err = fmt.Errorf("no zones found")
