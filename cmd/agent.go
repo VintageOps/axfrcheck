@@ -25,4 +25,5 @@ func Execute() {
 	}
 	err := app.Run(os.Args)
 	utils.FatalOnErr(err)
+	fmt.Println("All zones are ok")
 }
