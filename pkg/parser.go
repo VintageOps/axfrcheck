@@ -2,42 +2,10 @@ package pkg
 
 import (
 	"bufio"
-	"fmt"
-	"io"
 	"os"
 	"regexp"
 	"strings"
-
-	"gopkg.in/yaml.v2"
 )
-
-func LoadNamedConfYAML(zones []SlaveZone) (string, error) {
-	yamlData, err := yaml.Marshal(&zones)
-	if err != nil {
-		return "", fmt.Errorf("error: %v", err)
-	}
-
-	// For demonstration, let's print the YAML to stdout
-	fmt.Println(string(yamlData))
-
-	// Optionally, write to a temporary file
-	tempFile, err := os.CreateTemp("", "zones-*.yaml")
-	if err != nil {
-		return "", fmt.Errorf("error creating temp file: %v", err)
-	}
-	defer tempFile.Close()
-
-	_, err = io.WriteString(tempFile, string(yamlData))
-	if err != nil {
-		return "", fmt.Errorf("error writing to temp file: %v", err)
-	}
-
-	// Ensure you flush any buffered data
-	if err := tempFile.Sync(); err != nil {
-		return "", fmt.Errorf("error flushing temp file: %v", err)
-	}
-	return tempFile.Name(), nil
-}
 
 func ParseNamedConf(filePath string) ([]SlaveZone, error) {
 	file, err := os.Open(filePath)
