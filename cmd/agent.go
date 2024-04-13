@@ -1,29 +1,33 @@
 package cmd
 
 import (
+	pkg "axfrcheck/pkg"
 	"fmt"
-	"os"
 
-	"axfrcheck/pkg"
-
-	"github.com/VintageOps/dns-zone-compare/pkg/utils"
-	"github.com/urfave/cli/v2"
+	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
-func Execute() {
-	app := &cli.App{
-		Name:            "axfrcheck",
-		Usage:           "check the master zones defined as slave in a given configuration",
-		HideHelpCommand: true,
-		Action: func(c *cli.Context) error {
-			if c.NArg() != 1 {
-				fmt.Printf("ERROR: Needs one argument, the nameds/pdns configuration file, %d provided", c.NArg())
-				cli.ShowAppHelpAndExit(c, 1)
-			}
-			return pkg.CheckMasters(c.Args().Get(0))
-		},
-	}
-	err := app.Run(os.Args)
-	utils.FatalOnErr(err)
-	fmt.Println("All zones are ok")
+var rootCmd = &cobra.Command{
+	Use:   "axfrcheck [config file]",
+	Short: "AXFR check utility",
+	Long:  `AXFR check utility checks the master zones defined as slave in a given configuration`,
+	Args:  cobra.ExactArgs(1), // Requires exactly one argument
+	Run: func(cmd *cobra.Command, args []string) {
+		configFile := args[0]
+		zones, err := pkg.ParseNamedConf(configFile)
+		if err != nil {
+			fmt.Printf("Could not parse %s", configFile)
+		}
+		viper.Unmarshal(zones)
+		if err != nil {
+			fmt.Printf("Unable to decode into config struct, %v", err)
+		}
+
+		pkg.CheckMasters(zones)
+	},
+}
+
+func Execute() error {
+	return rootCmd.Execute()
 }
